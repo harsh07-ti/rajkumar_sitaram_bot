@@ -1,16 +1,16 @@
 {
   "name": "rajkumar_sitaram_bot",
   "version": "1.0.0",
-  "description": "School WhatsApp Bot",
+  "description": "Advanced School WhatsApp Bot with Firebase",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Rajkumar School",
+  "author": "Rajkumar Sitaram School",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "firebase-admin": "^11.10.1",
+    "firebase-admin": "^12.0.0",
     "body-parser": "^1.20.2"
   }
 }
