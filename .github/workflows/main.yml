@@ -1,4 +1,4 @@
-name: Node.js Bot
+name: rajkumar_sitaram_bot
 
 on:
   push:
@@ -9,16 +9,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
 
-    - name: ⚙️ Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-    - name: 📦 Install Dependencies
-      run: npm install
+      - name: 📦 Install Dependencies
+        run: npm install
 
-    - name: 🚀 Run Bot
-      run: node index.js
+      - name: 🚀 Run Bot Server
+        run: node index.js
+        env:
+          FIREBASE_URL: ${{ secrets.FIREBASE_URL }}
+          FIREBASE_KEY: ${{ secrets.FIREBASE_KEY }}
