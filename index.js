@@ -2,63 +2,90 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const admin = require("firebase-admin");
 
-const app = express();
-app.use(bodyParser.json());
-
-// Firebase Config
-const serviceAccount = require("./serviceAccountKey.json");
+// 🔐 Firebase Secrets from GitHub
+const serviceAccount = JSON.parse(process.env.FIREBASE_KEY);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com"
+  databaseURL: process.env.FIREBASE_URL
 });
 
 const db = admin.database();
+const app = express();
 
-// WhatsApp Webhook
-app.post("/webhook", async (req, res) => {
-  const message = req.body.message;
-  const number = req.body.from;
+app.use(bodyParser.json());
 
-  let reply = "❌ Invalid Option";
-
-  if (message === "1") {
-    reply = "📘 Admission Details:\nName: Rajkumar School\nApply Online: Link...";
-  }
-
-  else if (message === "2") {
-    const snap = await db.ref("attendance/" + number).once("value");
-    reply = "📅 Attendance: " + (snap.val() || "No Data");
-  }
-
-  else if (message === "3") {
-    const snap = await db.ref("result/" + number).once("value");
-    reply = "📊 Result: " + (snap.val() || "No Result Found");
-  }
-
-  else if (message === "4") {
-    const snap = await db.ref("fees/" + number).once("value");
-    reply = "💰 Fee Status: " + (snap.val() || "No Data");
-  }
-
-  else if (message === "5") {
-    reply = "💳 Payment Link:\nhttps://yourpaymentlink.com";
-  }
-
-  else {
-    reply = `👋 Welcome to Rajkumar Sitaram School
-
-Reply with:
-1️⃣ Admission
-2️⃣ Attendance
-3️⃣ Result
-4️⃣ Fee
-5️⃣ Payment`;
-  }
-
-  console.log("Reply:", reply);
-  res.send({ reply });
+// ✅ Server Check
+app.get("/", (req, res) => {
+  res.send("Rajkumar Sitaram School Bot Running 🚀");
 });
 
-// Server Start
-app.listen(3000, () => console.log("🚀 Bot Running on Port 3000"));
+// ================================
+// 📚 SCHOOL MODULES API
+// ================================
+
+// 1️⃣ Admission
+app.post("/admission", async (req, res) => {
+  try {
+    await db.ref("admission").push(req.body);
+    res.send("Admission Saved ✅");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// 2️⃣ Attendance
+app.post("/attendance", async (req, res) => {
+  try {
+    await db.ref("attendance").push(req.body);
+    res.send("Attendance Saved ✅");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// 3️⃣ Result
+app.post("/result", async (req, res) => {
+  try {
+    await db.ref("result").push(req.body);
+    res.send("Result Saved ✅");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// 4️⃣ Fee
+app.post("/fee", async (req, res) => {
+  try {
+    await db.ref("fee").push(req.body);
+    res.send("Fee Saved ✅");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// 5️⃣ Payment
+app.post("/payment", async (req, res) => {
+  try {
+    await db.ref("payment").push(req.body);
+    res.send("Payment Saved ✅");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// 📊 Get Data (Admin Panel)
+app.get("/data/:type", async (req, res) => {
+  try {
+    const snapshot = await db.ref(req.params.type).once("value");
+    res.json(snapshot.val());
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// 🚀 Start Server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
